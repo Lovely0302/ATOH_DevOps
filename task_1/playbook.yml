@@ -1,0 +1,55 @@
+---
+- name: Configure Nginx with Ansible (Task 1)
+  hosts: localhost
+  become: yes
+  become_method: sudo
+  vars_files:
+    - vars/main.yml
+  tasks:
+    - name: Install Nginx
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+        update_cache: yes
+
+    - name: Create default HTML directory
+      ansible.builtin.file:
+        path: "/usr/share/nginx/html"
+        state: directory
+        mode: '0755'
+
+    - name: Create index.html
+      ansible.builtin.shell: |
+        echo "<h1>Welcome to Nginx</h1>" > /usr/share/nginx/html/index.html
+
+    - name: Copy Nginx config from template
+      ansible.builtin.template:
+        src: "nginx.conf.j2"
+        dest: "/etc/nginx/nginx.conf"
+      notify: Restart Nginx
+
+    - name: Start and enable Nginx service
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Check HTTP port 80 (expecting 301 redirect)
+      ansible.builtin.shell: |
+        curl -s -o /dev/null -w "%{http_code}" http://localhost
+      register: http_check
+      ignore_errors: yes
+      until: http_check.stdout == "301" or http_check.stdout == "200"
+      retries: 5
+      delay: 2
+
+    - name: Show results
+      ansible.builtin.debug:
+        msg: |
+          HTTP check: {{ http_check.stdout }}
+
+  handlers:
+    - name: Restart Nginx
+      ansible.builtin.service:
+        name: nginx
+        state: restarted

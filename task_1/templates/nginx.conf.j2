@@ -1,0 +1,20 @@
+user www-data;
+worker_processes auto;
+pid /run/nginx.pid;
+
+events {
+    worker_connections 768;
+}
+
+http {
+    server {
+        listen {{ nginx_http_port }};
+        server_name {{ nginx_server_name }};
+
+        location / {
+            return 301 https://$host$request_uri;
+        }
+    }
+}
+
+

@@ -1,0 +1,34 @@
+[WARNING]: provided hosts list is empty, only localhost is available. Note that
+the implicit localhost does not match 'all'
+
+PLAY [Configure Nginx with Ansible (Task 1)] ***********************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [localhost]
+
+TASK [Install Nginx] ***********************************************************
+ok: [localhost]
+
+TASK [Create default HTML directory] *******************************************
+ok: [localhost]
+
+TASK [Create index.html] *******************************************************
+changed: [localhost]
+
+TASK [Copy Nginx config from template] *****************************************
+ok: [localhost]
+
+TASK [Start and enable Nginx service] ******************************************
+ok: [localhost]
+
+TASK [Check HTTP port 80 (expecting 301 redirect)] *****************************
+changed: [localhost]
+
+TASK [Show results] ************************************************************
+ok: [localhost] => {
+    "msg": "HTTP check: 301\n"
+}
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=8    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
